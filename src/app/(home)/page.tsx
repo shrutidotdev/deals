@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 
-import HeroSection from "./_components/HeroSection";
+import HeroSection from "../components/HeroSection";
 
 export default function Home() {
   return (
