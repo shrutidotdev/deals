@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import NavBar from "./_components/NavBar"
+import NavBar from "../components/NavBar"
 
 export default function HomeLayout({children}: {children: ReactNode}){
     return <div className="">
