@@ -6,8 +6,10 @@ export default function DashBoardLayOutPage({
 }: {
   children: React.ReactNode;
 }) {
-    return <div>
-        <NavBar/>
-         {children}
+  return (
+    <div>
+      <NavBar />
+      {children}
     </div>
+  );
 }
