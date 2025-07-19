@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { primaryKey, real } from "drizzle-orm/pg-core"; // Fixed import path
+import { primaryKey, real } from "drizzle-orm/pg-core"; 
 import {
     decimal,
     pgTable,
@@ -65,7 +65,7 @@ export const ProductTable = pgTable("products", {
     id: uuid("id").primaryKey().defaultRandom(),
     clerkUserId: text("clerk_user_id").notNull(),
     name: text("name").notNull(),
-    description: text("description"),
+    description: text("description").notNull(),
     url: text("url").notNull(),
     image: text("image"),
 
