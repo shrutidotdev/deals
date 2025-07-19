@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { primaryKey, real } from "drizzle-orm/pg-core"; // Fixed import path
+import { primaryKey, real } from "drizzle-orm/pg-core"; 
 import {
     decimal,
     pgTable,
@@ -12,7 +12,7 @@ import {
     index,
     pgEnum,
 } from "drizzle-orm/pg-core";
-import { subscriptionTiers, TierNames } from "../data/subsciption";
+import { subscriptionTiers, TierNames } from "../../data/subsciption";
 
 const createdAt = timestamp("created_at", { withTimezone: true })
     .notNull()
@@ -65,7 +65,7 @@ export const ProductTable = pgTable("products", {
     id: uuid("id").primaryKey().defaultRandom(),
     clerkUserId: text("clerk_user_id").notNull(),
     name: text("name").notNull(),
-    description: text("description"),
+    description: text("description").notNull(),
     url: text("url").notNull(),
     image: text("image"),
 

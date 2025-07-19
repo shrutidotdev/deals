@@ -1,8 +1,8 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { WebhookEvent } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
-import { UserTable } from "@/lib/db/schema";
+import { db } from "@/lib/database";
+import { UserTable } from "../../../../lib/database/schemas/schema";
 import { eq, or } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
