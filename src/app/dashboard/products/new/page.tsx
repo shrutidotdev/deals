@@ -1,4 +1,3 @@
-import React from 'react'
 import BackButton from '../../_component/BackButton'
 import ProductDetailsForm from '../../form/ProductDetailsForm'
 

@@ -12,7 +12,7 @@ import {
     index,
     pgEnum,
 } from "drizzle-orm/pg-core";
-import { subscriptionTiers, TierNames } from "../data/subsciption";
+import { subscriptionTiers, TierNames } from "../../data/subsciption";
 
 const createdAt = timestamp("created_at", { withTimezone: true })
     .notNull()

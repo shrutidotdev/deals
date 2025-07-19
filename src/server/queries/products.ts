@@ -1,4 +1,4 @@
-import { db } from "@/lib/db";
+import { db } from "@/lib/database";
 
 export function getProducts(userId: string, { limit} : { limit?: number}) {
     return db.query.ProductTable.findMany({
