@@ -1,11 +1,14 @@
-// import { db } from "@/lib/database";
-// import {
-//   ProductCustomizationTable,
-//   ProductTable,
-// } from "@/lib/database/schemas/schema";
-// import { createProductSchema } from "@/lib/zodvalidations/product";
-// import { auth } from "@clerk/nextjs/server";
-// import { z } from "zod";
+"use server";
+
+import { db } from "@/lib/database";
+import {
+    ProductCustomizationTable,
+    ProductTable,
+} from "@/lib/database/schemas/schema";
+import { createProductSchema } from "@/lib/zodvalidations/product";
+import { auth } from "@clerk/nextjs/server";
+import { z } from "zod";
+import { deleteProductById } from "../queries/products";
 
 // export async function createProductAfterSubmit(
 //   unsafeProductData: z.infer<typeof createProductSchema>
@@ -80,3 +83,25 @@
 //     };
 //   }
 // }
+
+
+export async function deleteProduct( id: string ) {
+    const { userId } = await auth();
+    const errorMessage = "Failed to delete product"
+
+    if (userId == null) {
+        return {
+            error: true,
+            message: errorMessage,
+        }
+    }
+
+    const isSuccess = await deleteProductById({id, userId});
+
+    if(isSuccess) { 
+        return {
+            error: isSuccess,
+            message: isSuccess ? "Product deleted successfully": `Failed to delete product ${errorMessage}`,
+        }
+    }
+}

@@ -25,7 +25,7 @@ export async function POST(req: Request) {
             .values({
                 clerkUserId: userId,
                 name: productData.name,
-                description: productData.description || null,
+                description: productData.description,
                 url: productData.url,
                 image: productData.image || null,
                 basePrice: productData.basePrice,
@@ -80,3 +80,4 @@ export async function POST(req: Request) {
         }, { status: 500 });
     }
 }
+
