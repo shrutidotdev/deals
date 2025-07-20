@@ -25,7 +25,7 @@ interface NavBarProps {
 }
 
 const DEFAULT_NAV_ITEMS: NavItem[] = [
-  { name: "Dashboard", href: "/product" },
+  { name: "Dashboard", href: "/dashboard" },
   { name: "Profile", href: "/solutions" },
   { name: "Analytics ", href: "/documentation" },
   { name: "Settings", href: "/media" },

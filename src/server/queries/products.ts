@@ -1,13 +1,21 @@
+import { CACHE_TAGS, dbCache, getGlobalTag, getUserTag } from "@/lib/cache";
 import { db } from "@/lib/database";
 import { ProductTable } from "@/lib/database/schemas/schema";
 import { and, eq } from "drizzle-orm";
 
 export function getProducts(userId: string, { limit }: { limit?: number }) {
-    return db.query.ProductTable.findMany({
-        where: ({ clerkUserId }, { eq }) => eq(clerkUserId, userId),
-        orderBy: ({ createdAt }, { desc }) => desc(createdAt),
-        limit,
+
+    const cacheFn = dbCache(getProductsInternally, {
+        tags: [getUserTag(userId, CACHE_TAGS.products)]
     })
+
+
+    return cacheFn(userId, { limit})
+    // return db.query.ProductTable.findMany({
+    //     where: ({ clerkUserId }, { eq }) => eq(clerkUserId, userId),
+    //     orderBy: ({ createdAt }, { desc }) => desc(createdAt),
+    //     limit,
+    // })
 }
 
 
@@ -17,4 +25,12 @@ export async function deleteProductById({id, userId}:{id: string, userId : strin
         .where(and(eq(ProductTable.id, id), eq(ProductTable.clerkUserId, userId)))
 
     return rowCount > 0;
+}
+
+function getProductsInternally(userId: string, { limit }: { limit?: number}){
+    return db.query.ProductTable.findMany({
+        where: ({ clerkUserId}, {eq}) => eq(clerkUserId, userId),
+        orderBy: ({ createdAt}, { desc }) => desc(createdAt),
+        limit,
+    })
 }
