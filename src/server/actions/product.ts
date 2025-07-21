@@ -160,10 +160,7 @@ export async function UpdateProductAfterSubmit(
     }
   
   } catch (error) {
-    // Check if this is a redirect error - if so, let it pass through
-    if (isRedirectError(error)) {
-      throw error;
-    }
+   
 
     console.error("❌ Product update error:", error);
     
