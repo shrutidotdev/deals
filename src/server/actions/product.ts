@@ -61,10 +61,6 @@ export async function createProductAfterSubmit(
     };
   
   } catch (error) {
-    // Check if this is a redirect error - if so, let it pass through
-    if (isRedirectError(error)) {
-      throw error;
-    }
 
     console.error("❌ Product creation error:", error);
     

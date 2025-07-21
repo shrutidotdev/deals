@@ -4,7 +4,7 @@ import ProductDetailsForm from "../../form/ProductDetailsForm";
 
 export default function NewProductPage() {
   return (
-    <main className="min-h-screen flex flex-col max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto">
+    <main className="min-h-screen mt-10 flex flex-col max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto">
       <BackButton title="Create Product" hrefTo="/dashboard/products">
         <Card>
           <CardHeader>

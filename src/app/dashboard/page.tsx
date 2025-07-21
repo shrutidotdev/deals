@@ -18,7 +18,7 @@ export default async function DashBoardPage() {
   //console.log(userSession, "User session ")
   if (!userId) return <div>You must be logged in to view this page</div>;
 
-  const products: Product[] = await getProducts(userId, { limit: 6 });
+  const products: Product[] = await getProducts(userId, { limit: 16 });
   if (products.length === 0) return <NoProductPage />;
 
   return (
