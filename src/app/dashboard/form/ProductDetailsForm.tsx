@@ -17,23 +17,32 @@ import {
   createProductSchema,
 } from "@/lib/zodvalidations/product";
 import { toast } from "sonner";
-import axios from "axios";
+import { createProductAfterSubmit } from "@/server/actions/product";
+import { useRouter } from "next/navigation";
 
-const ProductDetailsForm = () => {
+const ProductDetailsForm = ({
+  product,
+}: {
+  product?: { id: string; name: string; description: string; url: string };
+}) => {
+  const router = useRouter();
+  
   const form = useForm<CreateProductFormData>({
     resolver: zodResolver(createProductSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      url: "",
-      image: "",
-      basePrice: "",
-      currency: "INR",
-      enableParityPricing: false,
-      discountPercentage: 10,
-      isActive: true,
-      isPublished: false,
-    },
+    defaultValues: product
+      ? { ...product, description: product?.description ?? "" }
+      : {
+        name: "",
+        description: "",
+        url: "",
+        image: "",
+        basePrice: "",
+        currency: "INR",
+        enableParityPricing: false,
+        discountPercentage: 10,
+        isActive: true,
+        isPublished: false,
+      },
   });
 
   function ResetForm() {
@@ -44,40 +53,32 @@ const ProductDetailsForm = () => {
     console.log("🎉 FORM SUBMITTED SUCCESSFULLY!");
 
     try {
-      const response = await axios.post("/api/products", values);
-      const result = response.data;
-      
-      if (result.error) {
-        toast.error(result.message, {
+      const data = await createProductAfterSubmit(values);
+
+      if (data.error) {
+        toast.error(data.message, {
           duration: 3000,
         });
       } else {
-        toast.success(result.message, {
+        toast.success(data.message, {
           duration: 3000,
         });
         console.log("Form values:", values);
-        
+
         // Reset form after successful submission
         ResetForm();
-        
-        if (result.redirect) {
-          window.location.href = result.redirect;
+
+        // Redirect client-side after successful creation
+        if (data.productId) {
+          router.push(`/dashboard/products/${data.productId}/edit?tab=countries`);
         }
       }
     } catch (error) {
       console.error("Submission error:", error);
-      
-      // Handle axios errors
-      if (axios.isAxiosError(error)) {
-        const errorMessage = error.response?.data?.message || "Something went wrong";
-        toast.error(errorMessage, {
-          duration: 3000,
-        });
-      } else {
-        toast.error("Network error. Please try again.", {
-          duration: 3000,
-        });
-      }
+
+      toast.error("Something went wrong while submitting the Form.", {
+        duration: 3000,
+      });
     }
   }
 
@@ -134,9 +135,7 @@ const ProductDetailsForm = () => {
               <FormControl>
                 <Input placeholder="29.99" {...field} />
               </FormControl>
-              <FormDescription>
-                The base price of your product.
-              </FormDescription>
+              <FormDescription>The base price of your product.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

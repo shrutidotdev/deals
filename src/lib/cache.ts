@@ -24,7 +24,7 @@ export function getUserTag(userId: string, tag: keyof typeof CACHE_TAGS) {
 
 
 
-export async function getIdTags(id: string, tag: keyof typeof CACHE_TAGS) {
+export function getIdTags(id: string, tag: keyof typeof CACHE_TAGS) {
     return `id:${id}-${CACHE_TAGS[tag]}` as const
 }
 
@@ -33,13 +33,15 @@ export function clearFullCache() { // Fixed typo: clerFullCache -> clearFullCach
 }
 
 export function dbCache<T extends (...args: any[]) => Promise<any>>(
-  cb: Parameters<typeof unstable_cache<T>>[0],
-  { tags }: { tags: ValidTags[] }
+    cb: Parameters<typeof unstable_cache<T>>[0],
+    { tags }: { tags: ValidTags[] }
 ) {
-  return cache(unstable_cache<T>(cb, undefined, { tags: [...tags, "*"] }))
+    return cache(unstable_cache<T>(cb, undefined, { tags: [...tags, "*"] }))
 }
 
-export function revalidateTagCache({ tag, userId, id}: {tag: keyof typeof CACHE_TAGS,
+export function revalidateDBCache(
+    { tag, userId, id} : 
+    {tag: keyof typeof CACHE_TAGS,
     userId?: string,
     id?: string  
 }) {
@@ -47,7 +49,7 @@ export function revalidateTagCache({ tag, userId, id}: {tag: keyof typeof CACHE_
     if(userId != null) {
         revalidateTag(getUserTag(userId, tag))
     }
-    if(id != null ) {
-    revalidateTag(getIdTags(id, tag))
+    if(id != null) {
+        revalidateTag(getIdTags(id, tag))
     }
 }
