@@ -191,7 +191,7 @@ export const CountryGroupDiscountTable = pgTable("country_group_discount", {
     pk: primaryKey({ columns: [table.countryGroupId, table.productId] }),
 }));
 
-// Add the missing relation for CountryGroupDiscountTable
+
 export const countryGroupDiscountRelations = relations(CountryGroupDiscountTable, ({ one }) => ({
     countryGroup: one(CountryGroupTable, {
         fields: [CountryGroupDiscountTable.countryGroupId],
