@@ -24,10 +24,11 @@ export async function getProductCountryGroup({
         tags: [
             getUserTag(userId, CACHE_TAGS.products),
             getGlobalTag(CACHE_TAGS.countries),
-            getGlobalTag(CACHE_TAGS.contryGroup)
+            getGlobalTag(CACHE_TAGS.countryGroup)
         ],
 
     });
+    return cacheFn({productId, userId})
 }
 
 export function getProducts(userId: string, { limit }: { limit?: number } = {}) {
@@ -46,7 +47,7 @@ export function getProductToEdit({
     userId: string;
 }) {
     const cacheFn = dbCache(getProductToEditInternally, {
-        tags: [getUserTag(userId, "products"), getIdTags(id, "products")],
+        tags: [getUserTag(userId, CACHE_TAGS.products), getIdTags(id, CACHE_TAGS.products)],
     });
     return cacheFn({ userId, id });
 }
@@ -64,7 +65,7 @@ export async function deleteProductById({
 
     if (rowCount > 0) {
         revalidateDBCache({
-            tag: "products",
+            tag: CACHE_TAGS.products,
             userId,
             id,
         });
@@ -84,7 +85,7 @@ export async function updateProduct(
 
     if (rowCount > 0) {
         revalidateDBCache({
-            tag: "products",
+            tag: CACHE_TAGS.products,
             userId,
             id,
         });
@@ -100,11 +101,9 @@ export async function getProductCountryGroupInternally({
     userId: string
     productId: string
 }) {
-    // Gets the product first
-    const products = await getProducts({ id: productId, userId });
+    const products = await getProductToEditInternally({ id: productId, userId });
     if (products == null) return [];
 
-    // Main query that gets country groups with related data
     const data = await db.query.CountryGroupTable.findMany({
         with: {
             countries: {

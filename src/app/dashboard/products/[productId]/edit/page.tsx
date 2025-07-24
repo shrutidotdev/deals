@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DetailsTabs from "@/app/dashboard/_component/DetailsTabs";
+import CountryTab from "@/app/dashboard/_component/CountryTab";
 
 interface EditProductPageProps {
   params: Promise<{ productId: string }>;
@@ -42,7 +43,7 @@ const EditProductPage = async ({
             <DetailsTabs product={product} />
           </TabsContent>
           <TabsContent value="country">
-            Country
+            <CountryTab productId={product} />
           </TabsContent>
           <TabsContent value="customization">
             Customization

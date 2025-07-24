@@ -101,7 +101,12 @@ export const productConutryGroupDiscountSchema = z.object({
     groups: z.array(
         z.object({
             countryGroupId: z.string().min(1, "required"),
-            discountPercentage: z.number().max(100, "Discount cannot exceed 100%").min(1, "Discount cannot be negative").or(z.nan()).transform(n => (isNaN(n) ? undefined : n)).optional(),
+            discountPercentage: z
+                .number()
+                .max(100, "Discount cannot exceed 100%")
+                .min(1, "Discount cannot be negative")
+                .or(z.nan()).transform(n => (isNaN(n) ? undefined : n))
+                .optional(),
             coupon: z.string().optional()
         })
     )
