@@ -23,7 +23,7 @@ const EditProductPage = async ({
   const { userId, redirectToSignIn } = await auth();
   if (userId == null) {
     redirectToSignIn();
-    return 
+    return
   }
 
   const product = await getProductToEdit({ id: productId, userId });
@@ -31,25 +31,29 @@ const EditProductPage = async ({
     return notFound();
   }
   return (
-    <div className="flex flex-col gap-4 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-10">
+    <div className="flex flex-col gap-4 mx-auto">
       <BackButton title="Edit Products" hrefTo="/dashboard/products">
-        <Tabs defaultValue="account" className="w-[400px]">
-          <TabsList>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="country">Country</TabsTrigger>
-            <TabsTrigger value="customization">Customization</TabsTrigger>
-          </TabsList>
-          <TabsContent value="details">
-            <DetailsTabs product={product} />
-          </TabsContent>
-          <TabsContent value="country">
-            <CountryTab productId={product} />
-          </TabsContent>
-          <TabsContent value="customization">
-            Customization
-          </TabsContent>
-          <TabsContent value="password">Change your password here.</TabsContent>
-        </Tabs>
+
+        <div className="w-full max-w-4xl mx-auto">
+          <Tabs defaultValue="details" className="w-full">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="details">Details</TabsTrigger>
+              <TabsTrigger value="country">Country</TabsTrigger>
+              <TabsTrigger value="customization">Customization</TabsTrigger>
+            </TabsList>
+            <TabsContent value="details" className="mt-6">
+              <DetailsTabs product={product} />
+            </TabsContent>
+            <TabsContent value="country" className="mt-6">
+              <CountryTab productId={product.id} userId={userId} />
+            </TabsContent>
+            <TabsContent value="customization" className="mt-6">
+              <div className="p-4 border rounded-lg">
+                <p>Customization content coming soon...</p>
+              </div>
+            </TabsContent>
+          </Tabs>
+        </div>
       </BackButton>
     </div>
   );

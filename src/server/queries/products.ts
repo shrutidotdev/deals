@@ -4,7 +4,6 @@ import {
     getGlobalTag,
     getIdTags,
     getUserTag,
-    revalidateDBCache,
 } from "@/lib/cache";
 import { db } from "@/lib/database";
 import {
@@ -12,6 +11,8 @@ import {
     ProductTable,
 } from "@/lib/database/schemas/schema";
 import { and, eq } from "drizzle-orm";
+import { revalidateDBCache } from "../cache-action";
+
 
 export async function getProductCountryGroup({
     productId,
@@ -28,7 +29,7 @@ export async function getProductCountryGroup({
         ],
 
     });
-    return cacheFn({productId, userId})
+    return cacheFn({ productId, userId })
 }
 
 export function getProducts(userId: string, { limit }: { limit?: number } = {}) {
@@ -94,15 +95,20 @@ export async function updateProduct(
     return rowCount > 0;
 }
 
-export async function getProductCountryGroupInternally({
+async function getProductCountryGroupInternally({
     userId,
     productId,
 }: {
     userId: string
     productId: string
 }) {
-    const products = await getProductToEditInternally({ id: productId, userId });
-    if (products == null) return [];
+    const product = await db.query.ProductTable.findFirst({
+        where: ({ clerkUserId, id }, { eq, and }) =>
+            and(eq(clerkUserId, userId), eq(id, productId)),
+    })
+
+    if (product == null) return []
+
 
     const data = await db.query.CountryGroupTable.findMany({
         with: {
@@ -120,17 +126,17 @@ export async function getProductCountryGroupInternally({
                 where: (({ productId: id }, { eq }) => eq(id, productId)),
                 limit: 1
             }
-        },
-    });
+        }
+    })
 
-    
+
     return data.map(group => {
         return {
             id: group.id,
             name: group.name,
             recommendedDiscountPercentage: group.recommendedDiscountPercentage,
             countries: group.countries,
-            discounts: group.countryGroupDiscounts.at(0) 
+            discount: group.countryGroupDiscounts.at(0),
         }
     })
 }

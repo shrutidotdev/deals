@@ -2,7 +2,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -20,6 +19,8 @@ const CountryTab = async ({
     productId,
     userId,
   });
+
+
   return (
     <Card>
       <CardHeader>
@@ -32,23 +33,10 @@ const CountryTab = async ({
       <CardContent>
         <CountryDiscountsForm
           productId={productId}
-          countryGroups={[
-            {
-              countries: [{ code: "US", name: "United state" }],
-              id: "dsjhf",
-              name: "group 1",
-              recommendedDiscountPercentage: 0.1,
-              discount: {
-                coupon: "CFDFDDFD",
-                discountPercentage: 0.2,
-              },
-            },
-          ]}
+          countryGroups={countryGroups}
         />
       </CardContent>
-      {/* <CardFooter>
-        <p>Card Footer</p>
-      </CardFooter> */}
+
     </Card>
   );
 };

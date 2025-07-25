@@ -8,12 +8,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useForm } from "react-hook-form";
-import { file, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { productConutryGroupDiscountSchema } from "@/lib/zodvalidations/product";
-import { Card, CardContent, CardDescription } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import ReactCountryFlag from "react-country-flag";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const CountryDiscountsForm = ({
   productId,
@@ -62,10 +63,11 @@ const CountryDiscountsForm = ({
         {countryGroups.map((group, index) => (
           <Card key={group.id}>
             <CardContent>
-              <div>
-                <h2>{group.name}</h2>
+              <div className="flex flex-col gap-5">
+                <h2 className="text-2xl font-bold">{group.name}</h2>
 
-                <div>
+                <section className="w-[50%]">
+                  <div className="flex flex-wrap  gap-2 ">
                   {group.countries.map((country) => (
                     <ReactCountryFlag
                       svg
@@ -78,25 +80,32 @@ const CountryDiscountsForm = ({
                     />
                   ))}
                 </div>
+                </section>
               </div>
-              <Input
+              <input
                 type="hidden"
                 {...form.register(`groups.${index}.countryGroupId`)}
               />
 
-              <div className="flex gap-4">
+              <div className="flex gap-4 mt-6">
                 <FormField
                   control={form.control}
-                  name={`group.${index}.coupon`}
+                  name={`groups.${index}.discountPercentage`}
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Discount %</FormLabel>
                       <FormControl>
-                        <Input className="w-48" 
-                        {...field} value={field.value ?? ""} 
-                        onChange={e => field.onChange(e.target.valueAsNumber)} 
-                        min="0"
-                        max="100"
+                        <Input
+                        type="number"
+                          className="w-48"
+                          {...field}
+                          value={field.value ?? ""}
+                          onChange={(e) =>
+                            field.onChange(e.target.valueAsNumber)
+                          }
+                          min="0"
+                          max="100"
+                          placeholder="Enter discount percentage"
                         />
                       </FormControl>
                       <FormMessage />
@@ -104,13 +113,12 @@ const CountryDiscountsForm = ({
                   )}
                 />
 
-
                 <FormField
                   control={form.control}
-                  name={`group.${index}.discountPercentage`}
+                  name={`groups.${index}.coupon`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Coupon</FormLabel>
+                      <FormLabel className="bg-yellow-500 p-2 font-bold text-black rounded-md">Coupon</FormLabel>
                       <FormControl>
                         <Input className="w-48" {...field} />
                       </FormControl>
@@ -125,6 +133,7 @@ const CountryDiscountsForm = ({
             </CardContent>
           </Card>
         ))}
+      <Button disabled={form.formState.isSubmitting} type="submit">Submit</Button>
       </form>
     </Form>
   );

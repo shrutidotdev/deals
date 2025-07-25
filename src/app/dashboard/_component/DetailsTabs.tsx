@@ -4,12 +4,13 @@ import ProductDetailsForm from '../form/ProductDetailsForm'
 
 const DetailsTabs = ({product}: { product: { id: string, name: string ,  description: string, url: string}}) => {
   return (
-    <Card>
+    <Card className='p-6'>
         <CardHeader>
             <CardTitle>{product.name}</CardTitle>
         </CardHeader>
         <ProductDetailsForm product={product} />
     </Card>
+   
   )
 }
 
