@@ -15,6 +15,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import ReactCountryFlag from "react-country-flag";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+import { updateCountryDiscounts } from "@/server/actions/product";
 
 const CountryDiscountsForm = ({
   productId,
@@ -51,8 +53,15 @@ const CountryDiscountsForm = ({
     },
   });
 
-  function onSubmit(values: z.infer<typeof productConutryGroupDiscountSchema>) {
-    console.log(values, "values of the form");
+  async function onSubmit(values: z.infer<typeof productConutryGroupDiscountSchema>) {
+    const data = await updateCountryDiscounts(productId, values)
+
+    if(data?.error) {
+      toast.error("Message")
+    }
+    else{
+      toast.success("Got county discount")
+    }
   }
   return (
     <Form {...form}>
@@ -70,6 +79,7 @@ const CountryDiscountsForm = ({
                   <div className="flex flex-wrap  gap-2 ">
                   {group.countries.map((country) => (
                     <ReactCountryFlag
+                      key={country.code}
                       svg
                       countryCode={country.code}
                       style={{
