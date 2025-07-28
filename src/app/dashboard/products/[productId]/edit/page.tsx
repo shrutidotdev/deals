@@ -1,11 +1,11 @@
 import BackButton from "@/app/dashboard/_component/BackButton";
-import { env } from "@/lib/env/client";
 import { getProductToEdit } from "@/server/queries/products";
 import { auth } from "@clerk/nextjs/server";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DetailsTabs from "@/app/dashboard/_component/DetailsTabs";
 import CountryTab from "@/app/dashboard/_component/CountryTab";
+import CustomizationTab from "@/app/dashboard/_component/CustomizationTab";
 
 interface EditProductPageProps {
   params: Promise<{ productId: string }>;
@@ -41,6 +41,7 @@ const EditProductPage = async ({
               <TabsTrigger value="country">Country</TabsTrigger>
               <TabsTrigger value="customization">Customization</TabsTrigger>
             </TabsList>
+
             <TabsContent value="details" className="mt-6">
               <DetailsTabs product={product} />
             </TabsContent>
@@ -48,9 +49,7 @@ const EditProductPage = async ({
               <CountryTab productId={product.id} userId={userId} />
             </TabsContent>
             <TabsContent value="customization" className="mt-6">
-              <div className="p-4 border rounded-lg">
-                <p>Customization content coming soon...</p>
-              </div>
+              <CustomizationTab productId={product.id} userId={userId} />
             </TabsContent>
           </Tabs>
         </div>

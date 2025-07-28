@@ -1,18 +1,31 @@
 "use server";
 
-import { createProductSchema, productConutryGroupDiscountSchema } from "@/lib/zodvalidations/product";
+import {
+  createProductSchema,
+  productConutryGroupDiscountSchema,
+} from "@/lib/zodvalidations/product";
 import { auth } from "@clerk/nextjs/server";
-import { z } from "zod";
-import { createProduct, deleteProductById, updateCountryDiscount, updateProduct } from "../queries/products";
+import { string, z } from "zod";
+import {
+  createProduct,
+  deleteProductById,
+  updateCountryDiscount,
+  updateProduct,
+} from "../queries/products";
 import { redirect } from "next/navigation";
-import { error } from "console";
+import { CACHE_TAGS, dbCache, getUserTag } from "@/lib/cache";
+import { db } from "@/lib/database";
+import { subscriptionTiers } from "@/lib/data/subsciption";
 
 export async function createProductAfterSubmit(
   unsafeProductData: z.infer<typeof createProductSchema>
 ) {
   try {
     console.log("🔍 Starting product creation...");
-    console.log("📝 Received data:", JSON.stringify(unsafeProductData, null, 2));
+    console.log(
+      "📝 Received data:",
+      JSON.stringify(unsafeProductData, null, 2)
+    );
 
     // Auth Check
     const { userId } = await auth();
@@ -31,7 +44,7 @@ export async function createProductAfterSubmit(
     const validationResult = createProductSchema.safeParse(unsafeProductData);
     console.log("✅ Validation result:", {
       success: validationResult.success,
-      error: validationResult.success ? null : validationResult.error.flatten()
+      error: validationResult.success ? null : validationResult.error.flatten(),
     });
 
     if (!validationResult.success || !validationResult.data) {
@@ -39,8 +52,10 @@ export async function createProductAfterSubmit(
       return {
         error: true,
         message: "Invalid form data. Please check all fields.",
-        details: validationResult.success ? null : validationResult.error.flatten()
-      }
+        details: validationResult.success
+          ? null
+          : validationResult.error.flatten(),
+      };
     }
 
     const { data } = validationResult;
@@ -49,7 +64,10 @@ export async function createProductAfterSubmit(
     // Create product
     console.log("🔍 Creating product in database...");
     const productData = { ...data, clerkUserId: userId };
-    console.log("📝 Product data to insert:", JSON.stringify(productData, null, 2));
+    console.log(
+      "📝 Product data to insert:",
+      JSON.stringify(productData, null, 2)
+    );
 
     const newProduct = await createProduct(productData);
     console.log("✅ Product created successfully:", newProduct);
@@ -58,11 +76,9 @@ export async function createProductAfterSubmit(
     return {
       error: false,
       message: "Product created successfully!",
-      productId: newProduct.id
+      productId: newProduct.id,
     };
-
   } catch (error) {
-
     console.error("❌ Product creation error:", error);
 
     // Log more details about the error
@@ -85,7 +101,9 @@ export async function createProductAfterSubmit(
     // Handle database/other errors
     return {
       error: true,
-      message: `Something went wrong while creating your product: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      message: `Something went wrong while creating your product: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
     };
   }
 }
@@ -106,13 +124,15 @@ export async function UpdateProductAfterSubmit(
   id: string,
   unsafeProductData: z.infer<typeof createProductSchema>
 ): Promise<{ error: boolean; message: string; details?: any } | undefined> {
-
   try {
     console.log("🔍 Starting product update...");
     console.log("📝 Product ID:", id);
-    console.log("📝 Received data:", JSON.stringify(unsafeProductData, null, 2));
+    console.log(
+      "📝 Received data:",
+      JSON.stringify(unsafeProductData, null, 2)
+    );
 
-    const errorMessages = "Failed to update product. Try again later"
+    const errorMessages = "Failed to update product. Try again later";
 
     // Auth Check
     const { userId } = await auth();
@@ -131,7 +151,7 @@ export async function UpdateProductAfterSubmit(
     const validationResult = createProductSchema.safeParse(unsafeProductData);
     console.log("✅ Validation result:", {
       success: validationResult.success,
-      error: validationResult.success ? null : validationResult.error.flatten()
+      error: validationResult.success ? null : validationResult.error.flatten(),
     });
 
     if (!validationResult.success || !validationResult.data) {
@@ -139,8 +159,10 @@ export async function UpdateProductAfterSubmit(
       return {
         error: true,
         message: "Invalid form data. Please check all fields.",
-        details: validationResult.success ? null : validationResult.error.flatten()
-      }
+        details: validationResult.success
+          ? null
+          : validationResult.error.flatten(),
+      };
     }
 
     const { data } = validationResult;
@@ -152,12 +174,9 @@ export async function UpdateProductAfterSubmit(
 
     return {
       error: !result,
-      message: result ? "Product updated successfully" : errorMessages
-    }
-
+      message: result ? "Product updated successfully" : errorMessages,
+    };
   } catch (error) {
-
-
     console.error("❌ Product update error:", error);
 
     // Log more details about the error
@@ -179,7 +198,9 @@ export async function UpdateProductAfterSubmit(
 
     return {
       error: true,
-      message: `Something went wrong while updating your product: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      message: `Something went wrong while updating your product: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
     };
   }
 }
@@ -192,14 +213,14 @@ export async function deleteProduct(id: string) {
     const { userId } = await auth();
     console.log("👤 User ID:", userId);
 
-    const errorMessage = "Failed to delete product"
+    const errorMessage = "Failed to delete product";
 
     if (userId == null) {
       console.log("❌ No user ID found");
       return {
         error: true,
         message: errorMessage,
-      }
+      };
     }
 
     console.log("🔍 Deleting product from database...");
@@ -208,8 +229,10 @@ export async function deleteProduct(id: string) {
 
     return {
       error: !isSuccess,
-      message: isSuccess ? "Product deleted successfully" : `Failed to delete product: ${errorMessage}`,
-    }
+      message: isSuccess
+        ? "Product deleted successfully"
+        : `Failed to delete product: ${errorMessage}`,
+    };
   } catch (error) {
     // Check if this is a redirect error - if so, let it pass through
     if (isRedirectError(error)) {
@@ -219,30 +242,38 @@ export async function deleteProduct(id: string) {
     console.error("❌ Product deletion error:", error);
     return {
       error: true,
-      message: `Failed to delete product: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    }
+      message: `Failed to delete product: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`,
+    };
   }
 }
 
-
-export async function updateCountryDiscounts(id: string, unsafeData: z.infer<typeof productConutryGroupDiscountSchema>) {
-  const { userId } = await auth()
-  const { success, data } = productConutryGroupDiscountSchema.safeParse(unsafeData)
+export async function updateCountryDiscounts(
+  id: string,
+  unsafeData: z.infer<typeof productConutryGroupDiscountSchema>
+) {
+  const { userId } = await auth();
+  const { success, data } =
+    productConutryGroupDiscountSchema.safeParse(unsafeData);
 
   if (!success || userId == null) {
-    return { error: true, message: "There was an error while saving your product" }
+    return {
+      error: true,
+      message: "There was an error while saving your product",
+    };
   }
 
   const insert: {
-    countryGroupId: string,
-    discountPercentage: number,
-    coupon: string,
-    productId: string
-  }[] = []
+    countryGroupId: string;
+    discountPercentage: number;
+    coupon: string;
+    productId: string;
+  }[] = [];
 
-  const deleteIds: { countryGroupId: string }[] = []
+  const deleteIds: { countryGroupId: string }[] = [];
 
-  data.groups.forEach(group => {
+  data.groups.forEach((group) => {
     if (
       group.coupon != null &&
       group.coupon.length > 0 &&
@@ -253,14 +284,38 @@ export async function updateCountryDiscounts(id: string, unsafeData: z.infer<typ
         countryGroupId: group.countryGroupId,
         coupon: group.coupon,
         discountPercentage: group.discountPercentage / 100,
-        productId: id
-      })
+        productId: id,
+      });
     } else {
-      deleteIds.push({ countryGroupId: group.countryGroupId })
+      deleteIds.push({ countryGroupId: group.countryGroupId });
     }
-  })
+  });
 
-   await updateCountryDiscount(deleteIds, insert, {  productId: id , userId})
+  await updateCountryDiscount(deleteIds, insert, { productId: id, userId });
 
-   return { error : false , message: "Country discounts saved"}
+  return { error: false, message: "Country discounts saved" };
+}
+
+export async function getUserSubscription(userId: string) {
+  const cacheFn = dbCache(getUserSubscriptionTierInternally, {
+    tags: [getUserTag(userId, CACHE_TAGS.subscription)],
+  });
+
+  return cacheFn(userId);
+}
+
+export async function getUserSubscriptionTier(userId: string) {
+  const subscription = await getUserSubscriptionTier(userId);
+
+  if (subscription == null) {
+    throw new Error("User has no subscription");
+  }
+
+  return subscriptionTiers[subscription.tier]
+}
+
+export async function getUserSubscriptionTierInternally(userId: string) {
+  return db.query.UserSubscriptionTable.findFirst({
+    where: ({ clerkUserId }, { eq }) => eq(clerkUserId, userId),
+  });
 }

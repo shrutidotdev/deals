@@ -2,7 +2,7 @@ import { group } from "console";
 import { z } from "zod";
 
 export const createProductSchema = z.object({
-    
+
     name: z
         .string()
         .min(1, "Product name is required")
@@ -97,16 +97,26 @@ export const productConutryGroupDiscountSchema = z.object({
                 .optional(),
             coupon: z.string().optional()
         })
-        .refine(
-            value => {
-                const hasCoupon = value.coupon != null && value.coupon.length > 0;
-                const hasDiscount = value.discountPercentage != null
-                return !(hasCoupon && !hasDiscount)
-            },
-            {
-                message: "A discount is required if coupon code is provided",
-                path: ["root"]
-            }
-        )
+            .refine(
+                value => {
+                    const hasCoupon = value.coupon != null && value.coupon.length > 0;
+                    const hasDiscount = value.discountPercentage != null
+                    return !(hasCoupon && !hasDiscount)
+                },
+                {
+                    message: "A discount is required if coupon code is provided",
+                    path: ["root"]
+                }
+            )
     )
+})
+
+export const productCustomizationTableSchema = z.object({
+    classPrefix: z.string().optional(),
+    locationMessage: z.string().min(1, "Location is required."),
+    backgroundColor: z.string().regex(/^hsl?\(/, "Must be a valid HSL color"),
+    textColor: z.string().regex(/^hsl?\(/, "Must be a valid HSL color"),
+    fontSize: z.string().regex(/^\d+(\.\d+)?(rem|px|em)$/, "Must be valid font size"),
+    bannerContainer: z.string().min(1, "Banner container is required"),
+    isSticky: z.boolean(),
 })

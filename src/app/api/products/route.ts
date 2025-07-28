@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         const body = await req.json();
         const productData = createProductSchema.parse(body);
 
-        // Remove transaction - insert product first
+        // Removed transaction - insert product first
         const [insertedProduct] = await db
             .insert(ProductTable)
             .values({

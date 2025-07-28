@@ -56,10 +56,10 @@ const CountryDiscountsForm = ({
   async function onSubmit(values: z.infer<typeof productConutryGroupDiscountSchema>) {
     const data = await updateCountryDiscounts(productId, values)
 
-    if(data?.error) {
+    if (data?.error) {
       toast.error("Message")
     }
-    else{
+    else {
       toast.success("Got county discount")
     }
   }
@@ -77,19 +77,19 @@ const CountryDiscountsForm = ({
 
                 <section className="w-[50%]">
                   <div className="flex flex-wrap  gap-2 ">
-                  {group.countries.map((country) => (
-                    <ReactCountryFlag
-                      key={country.code}
-                      svg
-                      countryCode={country.code}
-                      style={{
-                        fontSize: "2em",
-                        lineHeight: "2em",
-                      }}
-                      aria-label={country.name}
-                    />
-                  ))}
-                </div>
+                    {group.countries.map((country) => (
+                      <ReactCountryFlag
+                        key={country.code}
+                        svg
+                        countryCode={country.code}
+                        style={{
+                          fontSize: "2em",
+                          lineHeight: "2em",
+                        }}
+                        aria-label={country.name}
+                      />
+                    ))}
+                  </div>
                 </section>
               </div>
               <input
@@ -97,16 +97,17 @@ const CountryDiscountsForm = ({
                 {...form.register(`groups.${index}.countryGroupId`)}
               />
 
+              {/* Discount and Coupon Section */}
               <div className="flex gap-4 mt-6">
                 <FormField
                   control={form.control}
                   name={`groups.${index}.discountPercentage`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Discount %</FormLabel>
+                      <FormLabel>Discount In (%)</FormLabel>
                       <FormControl>
                         <Input
-                        type="number"
+                          type="number"
                           className="w-48"
                           {...field}
                           value={field.value ?? ""}
@@ -128,7 +129,7 @@ const CountryDiscountsForm = ({
                   name={`groups.${index}.coupon`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="bg-yellow-500 p-2 font-bold text-black rounded-md">Coupon</FormLabel>
+                      <FormLabel>Coupon</FormLabel>
                       <FormControl>
                         <Input className="w-48" {...field} />
                       </FormControl>
@@ -137,13 +138,15 @@ const CountryDiscountsForm = ({
                   )}
                 />
               </div>
+
+              {/* Form Error Messages */}
               <FormMessage>
                 {form.formState.errors.groups?.[index]?.root?.message}
               </FormMessage>
             </CardContent>
           </Card>
         ))}
-      <Button disabled={form.formState.isSubmitting} type="submit">Submit</Button>
+        <Button disabled={form.formState.isSubmitting} type="submit">Submit</Button>
       </form>
     </Form>
   );
