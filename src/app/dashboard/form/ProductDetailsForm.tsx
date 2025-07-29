@@ -19,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { createProductAfterSubmit } from "@/server/actions/product";
 import { useRouter } from "next/navigation";
+import RequiredLabelIcon from "../_component/RequiredLabelIcon";
 
 const ProductDetailsForm = ({
   product,
@@ -26,7 +27,7 @@ const ProductDetailsForm = ({
   product?: { id: string; name: string; description: string; url: string };
 }) => {
   const router = useRouter();
-  
+
   const form = useForm<CreateProductFormData>({
     resolver: zodResolver(createProductSchema),
     defaultValues: product
@@ -97,7 +98,11 @@ const ProductDetailsForm = ({
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product Name</FormLabel>
+              <FormLabel>
+                Product Name
+                <RequiredLabelIcon />
+              </FormLabel>
+
               <FormControl>
                 <Input placeholder="Enter product name" {...field} />
               </FormControl>
@@ -114,7 +119,10 @@ const ProductDetailsForm = ({
           name="url"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Product URL</FormLabel>
+              <FormLabel>
+                Product URL
+                 <RequiredLabelIcon />
+                </FormLabel>
               <FormControl>
                 <Input placeholder="https://example.com" {...field} />
               </FormControl>
@@ -131,7 +139,10 @@ const ProductDetailsForm = ({
           name="basePrice"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Base Price</FormLabel>
+              <FormLabel>
+                Base Price
+                 <RequiredLabelIcon />
+                 </FormLabel>
               <FormControl>
                 <Input placeholder="29.99" {...field} />
               </FormControl>

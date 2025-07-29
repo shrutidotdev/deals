@@ -1,15 +1,16 @@
-import NotFound from '@/app/not-found'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { getProductsToCustomize } from '@/server/queries/products'
 import React from 'react'
 import ProductCustomizationForm from '../form/ProductCustomizationForm'
+import { notFound } from 'next/navigation'
+import { canCustomizeBanner, canRemoveBranding } from '@/server/permission'
 
 const CustomizationTab = async ({ productId, userId }: { productId: string, userId: string }) => {
 
     const customization = await getProductsToCustomize({ productId, userId })
 
-    if (!customization == null) return NotFound
-
+    if (customization == null) return notFound()
+    
     return (
         <Card>
             <CardHeader>
@@ -17,7 +18,11 @@ const CustomizationTab = async ({ productId, userId }: { productId: string, user
             </CardHeader>
 
             <CardContent>
-                <ProductCustomizationForm />
+                <ProductCustomizationForm
+                    canRemoveBranding={await canRemoveBranding(userId)}
+                    canCustomizeBanner={await canCustomizeBanner(userId) || true}
+                    customization={customization}
+                />
             </CardContent>
 
         </Card>

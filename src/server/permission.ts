@@ -1,19 +1,69 @@
+// Replace your permission functions in permission.ts with these:
+
 import { getUserSubscriptionTier } from "./actions/product"
 
-export async function canRemoveBranding(userId: string) {
-    if (userId == null) return false
-    const tier = await getUserSubscriptionTier(userId)
-    return tier.canRemoveBranding
+export async function canRemoveBranding(userId: string | null) {
+    console.log('🔍 canRemoveBranding called with userId:', userId);
+
+    if (userId == null) {
+        console.log('❌ No userId provided');
+        return false;
+    }
+
+    try {
+        const tier = await getUserSubscriptionTier(userId);
+        console.log('📝 Tier result in canRemoveBranding:', JSON.stringify(tier, null, 2));
+
+        const canRemove = Boolean(tier?.canRemoveBranding);
+        console.log('✅ canRemoveBranding final result:', canRemove);
+
+        return canRemove;
+    } catch (error) {
+        console.error('❌ Error in canRemoveBranding:', error);
+        return false;
+    }
 }
 
 export async function canCustomizeBanner(userId: string | null) {
-    if (userId == null) return false
-    const tier = await getUserSubscriptionTier(userId)
-    return tier.canCustomizeBanner
+    console.log('🔍 canCustomizeBanner called with userId:', userId);
+
+    if (userId == null) {
+        console.log('❌ No userId provided');
+        return false;
+    }
+
+    try {
+        const tier = await getUserSubscriptionTier(userId);
+        console.log('📝 Tier result in canCustomizeBanner:', JSON.stringify(tier, null, 2));
+
+        const canCustomize = Boolean(tier?.canCustomizeBanner);
+        console.log('✅ canCustomizeBanner final result:', canCustomize);
+
+        return canCustomize;
+    } catch (error) {
+        console.error('❌ Error in canCustomizeBanner:', error);
+        return false;
+    }
 }
 
 export async function canAccessAnalytics(userId: string | null) {
-    if (userId == null) return false
-    const tier = await getUserSubscriptionTier(userId)
-    return tier.canAccessAnalytics
+    console.log('🔍 canAccessAnalytics called with userId:', userId);
+
+    if (userId == null) {
+        console.log('❌ No userId provided');
+        return false;
+    }
+
+    try {
+        const tier = await getUserSubscriptionTier(userId);
+        console.log('📝 Tier result in canAccessAnalytics:', JSON.stringify(tier, null, 2));
+
+        const canAccess = Boolean(tier?.canAccessAnalytics);
+        console.log('✅ canAccessAnalytics final result:', canAccess);
+
+        return canAccess;
+    } catch (error) {
+        console.error('❌ Error in canAccessAnalytics:', error);
+        return false;
+    }
 }

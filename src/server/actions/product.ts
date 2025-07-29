@@ -17,6 +17,7 @@ import { CACHE_TAGS, dbCache, getUserTag } from "@/lib/cache";
 import { db } from "@/lib/database";
 import { subscriptionTiers } from "@/lib/data/subsciption";
 
+
 export async function createProductAfterSubmit(
   unsafeProductData: z.infer<typeof createProductSchema>
 ) {
@@ -101,9 +102,8 @@ export async function createProductAfterSubmit(
     // Handle database/other errors
     return {
       error: true,
-      message: `Something went wrong while creating your product: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
+      message: `Something went wrong while creating your product: ${error instanceof Error ? error.message : "Unknown error"
+        }`,
     };
   }
 }
@@ -198,9 +198,8 @@ export async function UpdateProductAfterSubmit(
 
     return {
       error: true,
-      message: `Something went wrong while updating your product: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
+      message: `Something went wrong while updating your product: ${error instanceof Error ? error.message : "Unknown error"
+        }`,
     };
   }
 }
@@ -234,17 +233,12 @@ export async function deleteProduct(id: string) {
         : `Failed to delete product: ${errorMessage}`,
     };
   } catch (error) {
-    // Check if this is a redirect error - if so, let it pass through
-    if (isRedirectError(error)) {
-      throw error;
-    }
 
     console.error("❌ Product deletion error:", error);
     return {
       error: true,
-      message: `Failed to delete product: ${
-        error instanceof Error ? error.message : "Unknown error"
-      }`,
+      message: `Failed to delete product: ${error instanceof Error ? error.message : "Unknown error"
+        }`,
     };
   }
 }
@@ -296,26 +290,73 @@ export async function updateCountryDiscounts(
   return { error: false, message: "Country discounts saved" };
 }
 
+const DEFAULT_TIER = subscriptionTiers.Free
+
 export async function getUserSubscription(userId: string) {
   const cacheFn = dbCache(getUserSubscriptionTierInternally, {
     tags: [getUserTag(userId, CACHE_TAGS.subscription)],
   });
 
-  return cacheFn(userId);
+  const result = await cacheFn(userId);
+  console.log('📝 getUserSubscription result:', result);
+  return result
 }
 
 export async function getUserSubscriptionTier(userId: string) {
-  const subscription = await getUserSubscriptionTier(userId);
+  const subscription = await getUserSubscription(userId);
 
-  if (subscription == null) {
-    throw new Error("User has no subscription");
+
+  if (!userId) {
+    console.log('❌ No userId provided, returning default tier');
+    return DEFAULT_TIER;
   }
 
-  return subscriptionTiers[subscription.tier]
+  try {
+    const subscription = await getUserSubscription(userId);
+    console.log('📝 Raw subscription from database:', JSON.stringify(subscription, null, 2));
+
+    if (subscription == null) {
+      console.log('⚠️ No subscription found, returning default tier');
+      return DEFAULT_TIER;
+    }
+
+    // Validate 
+    if (!subscription.tier) {
+      console.log('⚠️ Subscription missing tier property:', subscription);
+      return DEFAULT_TIER;
+    }
+    
+    const tierConfig = subscriptionTiers[subscription.tier as keyof typeof subscriptionTiers];
+
+    if (!tierConfig) {
+      console.log('⚠️ Invalid tier found:', subscription.tier);
+      console.log('Available tiers:', Object.keys(subscriptionTiers));
+      return DEFAULT_TIER;
+    }
+
+    console.log('✅ Found valid tier config:', tierConfig);
+    return tierConfig;
+  } catch (error) {
+    console.error('❌ Error in getUserSubscriptionTier:', error);
+    return DEFAULT_TIER;
+  }
+
+
 }
 
 export async function getUserSubscriptionTierInternally(userId: string) {
-  return db.query.UserSubscriptionTable.findFirst({
-    where: ({ clerkUserId }, { eq }) => eq(clerkUserId, userId),
-  });
+  console.log('🔍 getUserSubscriptionTierInternally called with userId:', userId);
+  
+  try {
+    const result = await db.query.UserSubscriptionTable.findFirst({
+      where: ({ clerkUserId }, { eq }) => eq(clerkUserId, userId),
+    });
+    
+    console.log('📝 Database query result:', JSON.stringify(result, null, 2));
+    return result;
+  } catch (error) {
+    console.error('❌ Database query error:', error);
+    throw error;
+  }
 }
+
