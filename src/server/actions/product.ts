@@ -16,6 +16,8 @@ import { redirect } from "next/navigation";
 import { CACHE_TAGS, dbCache, getUserTag } from "@/lib/cache";
 import { db } from "@/lib/database";
 import { subscriptionTiers } from "@/lib/data/subsciption";
+import { and, count, eq, gte } from "drizzle-orm";
+import { ProductTable, ProductViewTable } from "@/lib/database/schemas/schema";
 
 
 export async function createProductAfterSubmit(
@@ -360,3 +362,24 @@ export async function getUserSubscriptionTierInternally(userId: string) {
   }
 }
 
+export async function getProductsViewCount(userId: string, startDate: Date) {
+  const cacheFn = dbCache(getProductsViewCountInternally, {
+    tags: [getUserTag(userId, CACHE_TAGS.productView)]
+  })
+
+  return cacheFn(userId, startDate)
+}
+export async function getProductsViewCountInternally(userId: string, startDate: Date) {
+  const counts = await db
+  .select({ pricingViewCount: count() })
+  .from(ProductViewTable)
+  .innerJoin(ProductTable, eq(ProductTable.id, ProductViewTable.productId)) 
+  .where(
+    and(
+      eq(ProductTable.clerkUserId, userId),
+      gte(ProductViewTable.visitedAt, startDate)
+    )
+  )
+
+  return counts[0]?.pricingViewCount ?? 0;
+}
