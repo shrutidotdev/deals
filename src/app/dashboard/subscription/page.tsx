@@ -1,3 +1,4 @@
+import PricingCard from "@/app/components/PricingCard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
@@ -20,7 +21,7 @@ export default async function SubscriptionPage() {
             <main className="container mx-auto p-4 py-10 min-h-screen ">
                 <h1 className="mb-10 text-3xl text-center font-bold">Your Subscription</h1>
 
-                <div className="flex flex-col gap-4">
+                <div className="flex flex-col justify-evenly gap-10 mb-10">
                     <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
                         <Card>
                             <CardHeader>
@@ -58,7 +59,7 @@ export default async function SubscriptionPage() {
                 
 
 
-                {tier == subscriptionTiers.Free && (
+                {tier != subscriptionTiers.Free && (
                     <Card>
                         <CardHeader>
                             <CardTitle>You are currently on {" "}
@@ -69,15 +70,16 @@ export default async function SubscriptionPage() {
                             </CardDescription>
                             <CardContent>
 
-                                <form action={createCustomerPortalSession}>
+                                {/* <form action={createCustomerPortalSession}>
                                     <Button>Manage Subscription</Button>
-                                </form>
+                                </form> */}
                             </CardContent>
                         </CardHeader>
                     </Card>
                 )}
                 </div>
-                <div className="grid-cols-2 lg:grid-cols-4 gap-4 max-w-screen-xl mx-auto ">
+                
+                <div className="grid-cols-2 lg:grid-cols-4 gap-14  mx-auto ">
                     {subscriptionTiersInOrder.map((tier) => (
                         <PricingCard
                             key={tier.name}

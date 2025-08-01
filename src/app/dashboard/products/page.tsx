@@ -25,7 +25,7 @@ const Products = async () => {
     <main className="min-h-screen flex flex-col max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto">
       <div className="mt-10 flex justify-between items-center ">
         <Link href={"/dashboard"} className="flex items-center gap-2">
-           <p>Products</p>
+          
            <ArrowRight className="h-6 w-6 font-bold" />
         </Link>
         <CreateProductBtn />

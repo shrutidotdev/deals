@@ -43,7 +43,7 @@ export function getProducts(
   return cacheFn(userId, { limit });
 }
 
-export function getMaxProductCount(userId: string){
+export function getMaxProductCount(userId: string, startDate: Date){
   const cacheFn = dbCache(getProductsMaxCountInternally, {
     tags: [getUserTag(userId, CACHE_TAGS.products)],
   })
