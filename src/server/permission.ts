@@ -1,6 +1,7 @@
 // Replace your permission functions in permission.ts with these:
 
 import { getUserSubscriptionTier } from "./actions/product"
+import { getMaxProductCount } from "./queries/products";
 
 export async function canRemoveBranding(userId: string | null) {
     console.log('🔍 canRemoveBranding called with userId:', userId);
@@ -66,4 +67,13 @@ export async function canAccessAnalytics(userId: string | null) {
         console.error('❌ Error in canAccessAnalytics:', error);
         return false;
     }
+}
+
+export async function canCreateProduct(userId: string | null){
+    console.log('Can create products called with uerId:', userId);
+    if( userId == null) return false
+    const tier = await getUserSubscriptionTier(userId)
+    const maxProductCount = await getMaxProductCount(userId);
+    console.log('Max product count:', maxProductCount);
+    return tier.maxNumberOfProducts > maxProductCount
 }

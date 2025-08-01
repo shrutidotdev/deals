@@ -1,4 +1,4 @@
-import { env } from "@/lib/env/client"
+import { env } from "@/lib/env/client";
 
 export function Banner({
   message,
@@ -6,28 +6,28 @@ export function Banner({
   customization,
   canRemoveBranding,
 }: {
-  canRemoveBranding: boolean
-  message: string
+  canRemoveBranding: boolean;
+  message: string;
   mappings: {
-    coupon: string
-    discount: string
-    country: string
-  }
+    coupon: string;
+    discount: string;
+    country: string;
+  };
   customization: {
-    backgroundColor: string
-    textColor: string
-    fontSize: string
-    isSticky: boolean
-    classPrefix?: string | null
-  }
+    backgroundColor: string;
+    textColor: string;
+    fontSize: string;
+    isSticky: boolean;
+    classPrefix?: string | null;
+  };
 }) {
-  const prefix = customization.classPrefix ?? ""
+  const prefix = customization.classPrefix ?? "";
   const mappedMessage = Object.entries(mappings).reduce(
     (mappedMessage, [key, value]) => {
-      return mappedMessage.replace(new RegExp(`{${key}}`, "g"), value)
+      return mappedMessage.replace(new RegExp(`{${key}}`, "g"), value);
     },
     message.replace(/'/g, "&#39;")
-  )
+  );
 
   return (
     <>
@@ -56,6 +56,23 @@ export function Banner({
             font-size: inherit;
             display: inline-block;
             text-decoration: underline;
+            background-color: #fbeee0;
+            border: 2px solid #422800;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            box-shadow: #422800 4px 4px 0 0;
+            color: #422800;
+            cursor: pointer;
+            display: inline-block;
+            font-weight: 600;
+            font-size: 18px;
+            padding: 0 18px;
+            line-height: 40px;
+            text-align: center;
+            text-decoration: none;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
           }
         `}
       </style>
@@ -77,5 +94,5 @@ export function Banner({
         )}
       </div>
     </>
-  )
+  );
 }

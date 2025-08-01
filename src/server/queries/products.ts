@@ -11,7 +11,7 @@ import {
   ProductCustomizationTable,
   ProductTable,
 } from "@/lib/database/schemas/schema";
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, count, eq, inArray, sql } from "drizzle-orm";
 import { revalidateDBCache } from "../cache-action";
 import { BatchItem } from "drizzle-orm/batch";
 
@@ -43,6 +43,12 @@ export function getProducts(
   return cacheFn(userId, { limit });
 }
 
+export function getMaxProductCount(userId: string){
+  const cacheFn = dbCache(getProductsMaxCountInternally, {
+    tags: [getUserTag(userId, CACHE_TAGS.products)],
+  })
+  return cacheFn(userId)
+}
 export function getProductToEdit({
   id,
   userId,
@@ -292,4 +298,10 @@ export async function getProductCustomizationInternally({
   });
 
   return customization;
+}
+
+export async function getProductsMaxCountInternally(userId: string){
+  const counts = await db.select({ productCount: count() }).from(ProductTable).where(eq(ProductTable.clerkUserId, userId));
+
+  return counts[0]?.productCount ?? 0
 }

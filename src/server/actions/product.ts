@@ -255,7 +255,7 @@ export async function updateCountryDiscounts(
     return {
       error: true,
       message: "There was an error while saving your product",
-    };
+    };     
   }
 
   const insert: {

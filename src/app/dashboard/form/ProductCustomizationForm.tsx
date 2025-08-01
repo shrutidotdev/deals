@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Banner } from "@/app/components/Banner";
+import NoPermissionForCustomizationCard from "@/app/components/NoPermissionForCustomizationCard";
 
 
 export function ProductCustomizationForm({
@@ -64,16 +65,21 @@ export function ProductCustomizationForm({
       customization={formValue}
       canRemoveBranding={canRemoveBranding}
     />
+    {!canCustomizeBanner && (
+      <div className="mt-10">
+        <NoPermissionForCustomizationCard />
+      </div>
+    )}
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className="grid gap-8 grid-cols-1 md:grid-cols-2">
+          <div className="grid gap-8 grid-cols-1 md:grid-cols-2 mt-10">
             <FormField
               control={form.control}
               name="locationMessage"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>
-                    PPP Discount Message
+                    What is your PPP Discount Message
                     <RequiredLabelIcon />
                   </FormLabel>
                   <FormControl>
@@ -155,7 +161,7 @@ export function ProductCustomizationForm({
                   <FormControl>
                     <Switch
                       className="block"
-                      checked={field.onChange}
+                      checked={field.value}
                       onCheckedChange={field.onChange}
                       disabled={!canCustomizeBanner}
                     />
