@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { subscriptionTiersInOrder, TierNames } from '@/lib/data/subsciption'
 import { formatCompactNumber } from '@/lib/formatter';
 import { cn } from '@/lib/utils';
+import { createCancelSession, createCheckoutSession } from '@/server/stripe';
 import { CheckIcon } from 'lucide-react';
 import React from 'react'
 
@@ -31,21 +32,20 @@ const PricingCard = ({
                 </CardDescription>
             </CardHeader>
             <CardContent>
-                {/* <form
-                    action={
-                        name === "Free"
-                            ? createCancelSession
-                            : createCheckoutSession.bind(null, name)
-                    }
+                <form action={
+                    name === "Free"
+                        ? createCancelSession
+                        : createCheckoutSession.bind(null, name)
+                }
                 >
                     <Button
                         disabled={isCurrent}
-                        className="text-lg w-full rounded-lg"
+                        className="text-lg w-full rounded-lg bg-primary"
                         size="lg"
                     >
-                        {isCurrent ? "Current" : "Swap"}
+                        {isCurrent ? "Current Plan" : "Upgrade"}
                     </Button>
-                </form> */}
+                </form>
             </CardContent>
             <CardFooter className="flex flex-col gap-4 items-start">
                 <Feature className="font-bold">
@@ -66,7 +66,7 @@ export default PricingCard;
 function Feature({ children, className }: { children: React.ReactNode; className?: string }) {
     return (
         <div className={cn("flex items-center gap-6", className)}>
-            <CheckIcon className="size-4 stroke-cyan-50 bg-primary rounded-full p-0.7" />
+            <CheckIcon className="size-4 stroke-cyan-50 bg-primary rounded-full p-0.7" /> 
             <span>{children}</span>
         </div>
     )
