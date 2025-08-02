@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { subscriptionTiersInOrder, TierNames } from '@/lib/data/subsciption'
 import { formatCompactNumber } from '@/lib/formatter';
 import { cn } from '@/lib/utils';
-import { createCancelSession, createCheckoutSession } from '@/server/stripe';
+import { createCancelSession, createCheckoutSession } from '@/server/actions/stripe';
 import { CheckIcon } from 'lucide-react';
 import React from 'react'
 

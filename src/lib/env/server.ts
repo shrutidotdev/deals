@@ -10,7 +10,8 @@ export const env = createEnv({
         STRIPE_SECRET_KEY: z.string(),
         STRIPE_BASIC_PLAN_ID: z.string(),
         STRIPE_PREMIUM_PLAN_ID: z.string(),
-        STRIPE_STANDARD_PLAN_ID: z.string()
+        STRIPE_STANDARD_PLAN_ID: z.string(),
+        STRIPE_WEBHOOK_SECRET_KEY: z.string()
     },
     experimental__runtimeEnv: {
         DATABASE_URL: process.env.DATABASE_URL,
@@ -19,6 +20,7 @@ export const env = createEnv({
         STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
         STRIPE_BASIC_PLAN_ID: process.env.STRIPE_BASIC_PLAN_ID,
         STRIPE_PREMIUM_PLAN_ID: process.env.STRIPE_PREMIUM_PLAN_ID,
-        STRIPE_STANDARD_PLAN_ID: process.env.STRIPE_STANDARD_PLAN_ID
+        STRIPE_STANDARD_PLAN_ID: process.env.STRIPE_STANDARD_PLAN_ID,
+        STRIPE_WEBHOOK_SECRET_KEY: process.env.STRIPE_WEBHOOK_SECRET_KEY
     }
 })

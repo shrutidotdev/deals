@@ -5,7 +5,7 @@ import {
   productConutryGroupDiscountSchema,
 } from "@/lib/zodvalidations/product";
 import { auth } from "@clerk/nextjs/server";
-import { string, z } from "zod";
+import { z } from "zod";
 import {
   createProduct,
   deleteProductById,
@@ -16,8 +16,9 @@ import { redirect } from "next/navigation";
 import { CACHE_TAGS, dbCache, getUserTag } from "@/lib/cache";
 import { db } from "@/lib/database";
 import { subscriptionTiers } from "@/lib/data/subsciption";
-import { and, count, eq, gte } from "drizzle-orm";
-import { ProductTable, ProductViewTable } from "@/lib/database/schemas/schema";
+import { and, count, eq, gte, SQL } from "drizzle-orm";
+import { ProductTable, ProductViewTable, UserSubscriptionTable } from "@/lib/database/schemas/schema";
+import { revalidateDBCache } from "../cache-action";
 
 
 export async function createProductAfterSubmit(
@@ -257,7 +258,7 @@ export async function updateCountryDiscounts(
     return {
       error: true,
       message: "There was an error while saving your product",
-    };     
+    };
   }
 
   const insert: {
@@ -292,6 +293,8 @@ export async function updateCountryDiscounts(
   return { error: false, message: "Country discounts saved" };
 }
 
+
+// subscription related functions
 const DEFAULT_TIER = subscriptionTiers.Free
 
 export async function getUserSubscription(userId: string) {
@@ -327,7 +330,7 @@ export async function getUserSubscriptionTier(userId: string) {
       console.log('⚠️ Subscription missing tier property:', subscription);
       return DEFAULT_TIER;
     }
-    
+
     const tierConfig = subscriptionTiers[subscription.tier as keyof typeof subscriptionTiers];
 
     if (!tierConfig) {
@@ -348,12 +351,12 @@ export async function getUserSubscriptionTier(userId: string) {
 
 export async function getUserSubscriptionTierInternally(userId: string) {
   console.log('🔍 getUserSubscriptionTierInternally called with userId:', userId);
-  
+
   try {
     const result = await db.query.UserSubscriptionTable.findFirst({
       where: ({ clerkUserId }, { eq }) => eq(clerkUserId, userId),
     });
-    
+
     console.log('📝 Database query result:', JSON.stringify(result, null, 2));
     return result;
   } catch (error) {
@@ -371,15 +374,29 @@ export async function getProductsViewCount(userId: string, startDate: Date) {
 }
 export async function getProductsViewCountInternally(userId: string, startDate: Date) {
   const counts = await db
-  .select({ pricingViewCount: count() })
-  .from(ProductViewTable)
-  .innerJoin(ProductTable, eq(ProductTable.id, ProductViewTable.productId)) 
-  .where(
-    and(
-      eq(ProductTable.clerkUserId, userId),
-      gte(ProductViewTable.visitedAt, startDate)
+    .select({ pricingViewCount: count() })
+    .from(ProductViewTable)
+    .innerJoin(ProductTable, eq(ProductTable.id, ProductViewTable.productId))
+    .where(
+      and(
+        eq(ProductTable.clerkUserId, userId),
+        gte(ProductViewTable.visitedAt, startDate)
+      )
     )
-  )
 
   return counts[0]?.pricingViewCount ?? 0;
+}
+
+export async function updateUserSubscription(where: SQL, data: Partial<typeof UserSubscriptionTable.$inferInsert>) {
+  const [updatedSubscription] = await db.update(UserSubscriptionTable).set(data).where(where).returning({
+    id: UserSubscriptionTable.id,
+    userId: UserSubscriptionTable.clerkUserId
+  })
+  if (updatedSubscription != null) {
+    revalidateDBCache({
+      tags: CACHE_TAGS.subscription,
+      userId: updatedSubscription.userId,
+      id: updatedSubscription.id
+    })
+  }
 }

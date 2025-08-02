@@ -6,7 +6,7 @@ import { subscriptionTiers, subscriptionTiersInOrder } from "@/lib/data/subscipt
 import { formatCompactNumber } from "@/lib/formatter"
 import { getProductsViewCount, getUserSubscriptionTier } from "@/server/actions/product"
 import { getMaxProductCount } from "@/server/queries/products"
-import { createCustomerPortalSession } from "@/server/stripe"
+import { createCustomerPortalSession } from "@/server/actions/stripe"
 import { auth } from "@clerk/nextjs/server"
 import { startOfMonth } from "date-fns"
 
@@ -60,7 +60,7 @@ export default async function SubscriptionPage() {
                     </div>
 
 
-                    {userTier != subscriptionTiers.Free && (
+                    {userTier == subscriptionTiers.Free && (
                         <Card>
                             <CardHeader>
                                 <CardTitle>You are currently on {" "}
@@ -80,7 +80,7 @@ export default async function SubscriptionPage() {
                     )}
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-14 mx-auto ">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mx-auto ">
                     {subscriptionTiersInOrder.map((tier) => (
                         <PricingCard
                             key={tier.name}

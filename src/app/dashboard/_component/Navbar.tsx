@@ -29,7 +29,7 @@ const DEFAULT_NAV_ITEMS: NavItem[] = [
   { name: "Profile", href: "/solutions" },
   { name: "Analytics ", href: "/documentation" },
   { name: "Settings", href: "/media" },
-  { name: "Pricing", href: "/pricing" },
+  { name: "Pricing", href: "/dashboard/subscription" },
 ];
 
 const NavBar: React.FC<NavBarProps> = ({
